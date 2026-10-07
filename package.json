@@ -1,0 +1,20 @@
+{
+  "name": "career-crew",
+  "version": "0.1.0",
+  "description": "A blank-slate Claude Code job-application system: tailored resumes, outreach, interview prep, and job scraping.",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test",
+    "doctor": "node scripts/doctor.js",
+    "render": "node scripts/render_specialists.js",
+    "pdf": "node scripts/to_pdf.js"
+  },
+  "dependencies": {
+    "docx": "^9.9.0",
+    "jszip": "^3.10.2"
+  }
+}

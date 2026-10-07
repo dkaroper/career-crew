@@ -1,0 +1,11 @@
+node_modules/
+profile/
+library/
+inputs/
+applications/
+.claude/agents/resume-tailor-*.md
+.claude/settings.local.json
+.DS_Store
+.env
+.superpowers/
+.worktrees/

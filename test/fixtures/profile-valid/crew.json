@@ -1,0 +1,11 @@
+{
+  "user": { "fullName": "Jane Doe", "displayName": "Jane", "filePrefix": "Doe" },
+  "agents": {
+    "orchestrator": "Scout",
+    "resume-tailor": "Weaver",
+    "outreach": "Herald",
+    "interview-prep": "Sage",
+    "job-scraper": "Fred"
+  },
+  "specialists": { "design": "Drafter", "quality": "Warden" }
+}

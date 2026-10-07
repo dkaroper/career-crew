@@ -1,0 +1,38 @@
+{
+  "tracks": [
+    {
+      "slug": "design",
+      "label": "Design",
+      "titleKeywords": ["designer", "drafter", "CAD"],
+      "seniority": ["junior", "intermediate"],
+      "scoringEmphasis": {
+        "direct": "Hands-on CAD design and drafting work.",
+        "transferable": "Prototyping and fabrication experience.",
+        "adjacent": "Documentation and revision control.",
+        "impact": "Parts released, cycle time saved."
+      },
+      "header": {
+        "label": "MECHANICAL DESIGNER",
+        "guidance": "One line naming the design focus and top tools."
+      },
+      "excludeKeywords": []
+    },
+    {
+      "slug": "quality",
+      "label": "Quality/QC",
+      "titleKeywords": ["quality", "inspector"],
+      "seniority": ["junior"],
+      "scoringEmphasis": {
+        "direct": "Inspection and audit work.",
+        "transferable": "Process documentation.",
+        "adjacent": "Safety compliance.",
+        "impact": "Defect rate reductions."
+      },
+      "header": {
+        "label": "QUALITY TECHNICIAN",
+        "guidance": "One line naming the inspection focus."
+      },
+      "excludeKeywords": ["sales"]
+    }
+  ]
+}
