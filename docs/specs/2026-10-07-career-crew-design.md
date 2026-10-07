@@ -115,8 +115,16 @@ All user-data folders are lowercase. Agents use these paths exactly; no casing c
       "label": "Design",
       "titleKeywords": ["designer", "drafter", "CAD"],
       "seniority": ["junior", "intermediate"],
-      "scoringEmphasis": "Free text: what to weight when scoring pieces for this track.",
-      "headerFraming": "Free text: how the resume header/focus line should read.",
+      "scoringEmphasis": {
+        "direct": "What counts as direct evidence for this track.",
+        "transferable": "What counts as transferable evidence.",
+        "adjacent": "What counts as adjacent evidence.",
+        "impact": "Which metrics/outcomes matter most."
+      },
+      "header": {
+        "label": "MECHANICAL DESIGNER",
+        "guidance": "How the focus line under the caps label should read."
+      },
       "excludeKeywords": []
     }
   ]
@@ -190,7 +198,7 @@ Transformations:
    tracks" reference becomes a lookup into `profile/`.
 2. **Specialists:** the shared ~95% of the five source specialist files becomes
    `.claude/templates/track-specialist.md` with placeholders
-   (`{{name}}`, `{{slug}}`, `{{label}}`, `{{scoringEmphasis}}`, `{{headerFraming}}`,
+   (`{{name}}`, `{{slug}}`, `{{label}}`, `{{scoringEmphasis.*}}`, `{{header.*}}`,
    `{{titleKeywords}}`); per-track SKILL.md content folds into the same render.
 3. **CLAUDE.md:** rewritten as current rules only (~250 lines). Dated "As of ..."
    history moves to `docs/architecture.md`.
