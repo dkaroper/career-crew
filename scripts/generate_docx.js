@@ -9,7 +9,7 @@
  *
  * Input JSON shape:
  * {
- *   "name": "MARIE-ÈVE CÔTÉ-TREMBLAY",
+ *   "name": "Marie-Ève Côté-Tremblay",
  *   "contact": "555-0100 • marie.cote@example.com • Montréal, QC",
  *   "focusHeader": { "track": "QUALITY TECHNICIAN", "line": "One-sentence positioning line." },  // optional
  *   "summary": "Quality Technician with five years ...",

@@ -16,7 +16,7 @@ test("buildDocument returns a Buffer holding the persona's text", async () => {
   assert.ok(Buffer.isBuffer(buf));
   const zip = await JSZip.loadAsync(buf);
   const xml = await zip.file("word/document.xml").async("string");
-  assert.ok(xml.includes("Côté-Tremblay") || xml.includes("CÔTÉ-TREMBLAY"));
+  assert.ok(xml.includes("Côté-Tremblay"));
   assert.ok(xml.includes("QUALITY TECHNICIAN"));
 });
 
