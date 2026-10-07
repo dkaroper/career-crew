@@ -6,7 +6,7 @@
 
 **Architecture:** Static, generic agent prompts read the user's `profile/` at runtime; only per-track resume specialists are generated (from one template) by a Node script. Small, tested Node scripts handle rendering, `.docx`/PDF output, resume text extraction, prerequisite checks, and a privacy scan. All user data lives in gitignored lowercase folders.
 
-**Tech Stack:** Node.js 18+ (CommonJS, `node:test`), `docx`, `jszip`; Markdown agent/skill prompts for Claude Code; Word COM (Windows) or LibreOffice for PDF.
+**Tech Stack:** Node.js 22+ (CommonJS, `node:test`), `docx`, `jszip`; Markdown agent/skill prompts for Claude Code; Word COM (Windows) or LibreOffice for PDF.
 
 **Spec:** `docs/specs/2026-10-07-career-crew-design.md`
 
@@ -15,7 +15,7 @@
 ## Global Constraints
 
 - Repo root: `career-crew/` (sibling of `SRC`), branch `main`, MIT license.
-- Node >= 18, CommonJS, no build step. Runtime deps exactly: `docx`, `jszip`. No dev deps (tests use `node:test` + `node:assert`).
+- Node >= 22, CommonJS, no build step. Runtime deps exactly: `docx`, `jszip`. No dev deps (tests use `node:test` + `node:assert`).
 - `npm test` runs `node --test test/`.
 - User-data paths (all gitignored, none shipped): `profile/`, `library/`, `inputs/`, `applications/`, generated `.claude/agents/resume-tailor-*.md`. Lowercase everywhere.
 - Denylist: `../Job/.career-crew-denylist.txt` (outside this repo, never committed). Every "no personal data" verification means `grep -rniF -f ../Job/.career-crew-denylist.txt <paths>` returns nothing.
@@ -73,7 +73,7 @@ Threats the spec names, each pinned to the task that owns its test:
 - Produces CLI `node scripts/app_path.js "<Company>" "<Role>" [--root <dir>]`: prints the absolute path `<root>/applications/<safeSegment(Company)>_<safeSegment(Role)>` and asserts (exit 1 otherwise) that the resolved path is inside `<root>/applications/`.
 
 - [ ] **Step 0: Build the denylist** at `../Job/.career-crew-denylist.txt` from SRC's own data: the owner's full-name variants, emails, phone numbers, every employer in `SRC/resumes/Experience_Library.md`, every company in `SRC/Applications/Job_Application_Tracker.md`, and the folder names under `SRC/Friends/`. Add the filename to SRC's `.gitignore`. Never copy it into this repo.
-- [ ] **Step 1: Scaffold.** `package.json` with name `career-crew`, `"engines": {"node": ">=18"}`, deps `docx` and `jszip` (current majors), scripts `test`, `doctor` (`node scripts/doctor.js`), `render` (`node scripts/render_specialists.js`), `pdf` (`node scripts/to_pdf.js`). `.gitignore`: `node_modules/`, `profile/`, `library/`, `inputs/`, `applications/`, `.claude/agents/resume-tailor-*.md`, `.claude/settings.local.json`, `.DS_Store`. MIT `LICENSE` with copyright holder "career-crew contributors". Run `npm install`; commit `package-lock.json`.
+- [ ] **Step 1: Scaffold.** `package.json` with name `career-crew`, `"engines": {"node": ">=22"}`, deps `docx` and `jszip` (current majors), scripts `test`, `doctor` (`node scripts/doctor.js`), `render` (`node scripts/render_specialists.js`), `pdf` (`node scripts/to_pdf.js`). `.gitignore`: `node_modules/`, `profile/`, `library/`, `inputs/`, `applications/`, `.claude/agents/resume-tailor-*.md`, `.claude/settings.local.json`, `.DS_Store`. MIT `LICENSE` with copyright holder "career-crew contributors". Run `npm install`; commit `package-lock.json`.
 
 - [ ] **Step 2: Write failing tests** in `test/profile.test.js`:
   - `readJson` on a missing path returns `ok:false`, error starts with `missing:`; on a file containing `{"a":` returns `ok:false` with the file path in `error`.
@@ -174,9 +174,9 @@ Threats the spec names, each pinned to the task that owns its test:
 **Interfaces:**
 - Consumes: Task 1 `readJson`, `profilePaths`; Task 4 `detect`.
 - Produces: `runChecks({root, nodeVersion, detectPdf, requireResolve}) -> Array<{name: string, ok: boolean, required: boolean, detail: string, fix: string}>` (all collaborators injectable for tests); CLI prints `PASS`/`FAIL`/`WARN` lines and exits 1 only if a `required` check fails.
-- Checks, in order: `node` (>= 18, required), `docx` + `jszip` resolvable (required), `pdf-engine` (optional), `profile` (state: `not started` / `in progress (stage N)` / `complete` / `corrupt: <error>`; optional), `specialists` (when profile complete: every track in `tracks.json` has a rendered file; optional), `user-data-tracked` (runs `git ls-files profile library inputs applications .env` via injectable `gitLsFiles`; any output gives `ok:false`, `required:false`, fix `git rm -r --cached <path>`; skipped when not a git repo).
+- Checks, in order: `node` (>= 22, required), `docx` + `jszip` resolvable (required), `pdf-engine` (optional), `profile` (state: `not started` / `in progress (stage N)` / `complete` / `corrupt: <error>`; optional), `specialists` (when profile complete: every track in `tracks.json` has a rendered file; optional), `user-data-tracked` (runs `git ls-files profile library inputs applications .env` via injectable `gitLsFiles`; any output gives `ok:false`, `required:false`, fix `git rm -r --cached <path>`; skipped when not a git repo).
 
-- [ ] **Step 1: Write failing tests:** node `16.20.0` gives node check `ok:false, required:true` and fix mentioning `nodejs.org`; missing `docx` gives required failure; no PDF engine gives `ok:false, required:false` with fix mentioning LibreOffice; `onboarding-state.json` containing `{` gives profile detail starting `corrupt:`; complete state with a track lacking a rendered file gives specialists `ok:false` with fix `npm run render`; `gitLsFiles` returning `profile/crew.json` gives `user-data-tracked` `ok:false` with fix containing `git rm -r --cached`; returning nothing gives `ok:true`.
+- [ ] **Step 1: Write failing tests:** node `20.18.0` gives node check `ok:false, required:true` and fix mentioning `nodejs.org`; missing `docx` gives required failure; no PDF engine gives `ok:false, required:false` with fix mentioning LibreOffice; `onboarding-state.json` containing `{` gives profile detail starting `corrupt:`; complete state with a track lacking a rendered file gives specialists `ok:false` with fix `npm run render`; `gitLsFiles` returning `profile/crew.json` gives `user-data-tracked` `ok:false` with fix containing `git rm -r --cached`; returning nothing gives `ok:true`.
 - [ ] **Step 2: Run**; FAIL. **Step 3: Implement.** **Step 4: Run**; PASS.
 - [ ] **Step 5: Commit** `feat: doctor prerequisite and profile checks`.
 
@@ -314,7 +314,7 @@ Every file in this task gets the preamble, the Untrusted Content block, and its 
 - Create: `.github/workflows/ci.yml`, `.github/dependabot.yml`
 - Test: extend `test/repo-hygiene.test.js`
 
-- [ ] **Step 1: Write failing test:** `ci.yml` exists and contains `permissions:` with `contents: read`, the three OS names `ubuntu-latest`, `windows-latest`, `macos-latest`, node versions `18`, `20`, `22`, and the commands `npm ci`, `npm test`, `npm audit --audit-level=high`, `privacy_scan.js --secrets`; `dependabot.yml` lists ecosystems `npm` and `github-actions` with `interval: weekly`.
+- [ ] **Step 1: Write failing test:** `ci.yml` exists and contains `permissions:` with `contents: read`, the three OS names `ubuntu-latest`, `windows-latest`, `macos-latest`, node versions `22`, `24`, and the commands `npm ci`, `npm test`, `npm audit --audit-level=high`, `privacy_scan.js --secrets`; `dependabot.yml` lists ecosystems `npm` and `github-actions` with `interval: weekly`.
 - [ ] **Step 2: Run** `npm test`; FAIL.
 - [ ] **Step 3: Write both files.** CI triggers on `push` and `pull_request`; `fail-fast: false`; `actions/checkout` and `actions/setup-node` at current major versions; `npm audit` runs once (ubuntu, node 22) rather than in every matrix cell.
 - [ ] **Step 4: Run** `npm test` (PASS) and `npm audit --audit-level=high` locally (exit 0; if not, upgrade the offending dependency and rerun).

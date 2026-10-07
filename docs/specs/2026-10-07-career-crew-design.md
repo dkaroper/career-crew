@@ -228,12 +228,12 @@ Transformations:
   the generated-file marker comment), print a restart notice.
 - `extract_text.js`: `.docx` text via the `jszip` already pulled in by `docx`; `.txt`
   passthrough.
-- `doctor.js`: checks Node >= 18, `docx` installed, PDF engine available, profile state;
+- `doctor.js`: checks Node >= 22, `docx` installed, PDF engine available, profile state;
   prints pass/fail lines with fixes; exit code 0 unless Node/docx missing.
 
 ## 7. Prerequisites (documented in PREREQUISITES.md)
 
-Required: Claude Code; Node.js 18+ and `npm install`; git.
+Required: Claude Code; Node.js 22+ and `npm install`; git.
 For PDF: Microsoft Word (Windows) or LibreOffice (any OS).
 Optional: Apify account + token and JobDataLake connector (Job Scraper); Claude in
 Chrome extension (Outreach LinkedIn checks, application walkthrough file uploads);
@@ -274,7 +274,7 @@ Added 2026-10-07 at the owner's request.
 - Unit tests for every script (section 8) plus prompt-hygiene tests over every shipped
   agent and skill file.
 - GitHub Actions CI on every push and pull request: OS matrix (Ubuntu, Windows, macOS)
-  x Node 18, 20, 22; runs `npm ci`, `npm test`, `npm audit --audit-level=high`, and
+  x Node 22, 24; runs `npm ci`, `npm test`, `npm audit --audit-level=high`, and
   the secret scan. Workflow permissions are read-only.
 - Dependabot for npm and GitHub Actions, weekly.
 
