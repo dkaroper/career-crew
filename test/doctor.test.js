@@ -33,6 +33,18 @@ test('old node fails as required with nodejs.org fix', () => {
   assert.match(c.fix, /nodejs\.org/);
 });
 
+test('node versions: v-prefixed and large majors', () => {
+  for (const v of ['v22.1.0', '22.0.0', '100.0.0']) {
+    assert.strictEqual(get(run(tmpRoot(), { nodeVersion: v }), 'node').ok, true, v);
+  }
+  const bad = get(run(tmpRoot(), { nodeVersion: 'v20.18.0' }), 'node');
+  assert.strictEqual(bad.ok, false);
+  assert.strictEqual(bad.required, true);
+  const junk = get(run(tmpRoot(), { nodeVersion: 'banana' }), 'node');
+  assert.strictEqual(junk.ok, false);
+  assert.match(junk.detail, /banana/);
+});
+
 test('node 22 passes', () => {
   assert.strictEqual(get(run(tmpRoot()), 'node').ok, true);
 });

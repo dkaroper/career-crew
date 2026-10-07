@@ -20,13 +20,13 @@ function defaultDetectPdf() {
 }
 
 function checkNode(nodeVersion) {
-  const major = parseInt(String(nodeVersion).split('.')[0], 10);
+  const major = parseInt(String(nodeVersion).trim().replace(/^v/i, '').split('.')[0], 10);
   const ok = Number.isFinite(major) && major >= MIN_NODE_MAJOR;
   return {
     name: 'node',
     ok,
     required: true,
-    detail: `Node ${nodeVersion}`,
+    detail: Number.isFinite(major) ? `Node ${String(nodeVersion).trim().replace(/^v/i, '')}` : `unparseable Node version: ${JSON.stringify(String(nodeVersion))}`,
     fix: ok ? '' : `Install Node ${MIN_NODE_MAJOR} or newer from https://nodejs.org, then reopen your terminal.`,
   };
 }
