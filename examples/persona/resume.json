@@ -1,0 +1,47 @@
+{
+  "name": "MARIE-ÈVE CÔTÉ-TREMBLAY",
+  "contact": "555-0100 • marie.cote@example.com • Montréal, QC",
+  "focusHeader": {
+    "track": "QUALITY TECHNICIAN",
+    "line": "Inspection and corrective-action work on a precision machining floor."
+  },
+  "summary": "Quality Technician with five years of inspection, gauge control and nonconformance follow-up in machining and assembly environments.",
+  "sections": [
+    {
+      "title": "CORE COMPETENCIES",
+      "type": "labeled-list",
+      "items": [
+        { "label": "Inspection: ", "text": "CMM, calipers, micrometers, first-article reports" },
+        { "label": "Quality Systems: ", "text": "ISO 9001, 8D, control plans, SPC" }
+      ]
+    },
+    {
+      "title": "EXPERIENCE",
+      "type": "experience",
+      "jobs": [
+        {
+          "title": "Quality Technician",
+          "dates": "Mar 2022 – Present",
+          "subtitle": "Atelier Exemple Inc., Montréal, QC",
+          "bullets": [
+            "Inspected machined parts against drawings and logged results for every production lot.",
+            { "label": "Corrective Action: ", "text": "Led 8D reviews on recurring surface-finish defects, cutting repeat returns." }
+          ]
+        },
+        {
+          "title": "Inspection Assistant",
+          "dates": "Jun 2019 – Feb 2022",
+          "subtitle": "Usinage Modèle Ltée, Laval, QC",
+          "bullets": [
+            "Calibrated hand gauges on a monthly schedule and kept the calibration register current."
+          ]
+        }
+      ]
+    },
+    {
+      "title": "EDUCATION",
+      "type": "text-lines",
+      "lines": [ "Diploma in Mechanical Manufacturing Technology, Collège Exemple, Montréal, QC" ]
+    }
+  ]
+}
