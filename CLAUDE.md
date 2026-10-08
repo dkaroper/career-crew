@@ -92,8 +92,9 @@ lead, the balance across applications? You may also run `marketings:content-huma
 1. **Spot-check the report** (`<filePrefix>_<Company>_<Role>_Resume_Report.md`): every
    included piece still carries its rationale. If it was thinned out, send it back.
 2. **Audit the `.docx`** (heading hierarchy, style consistency, formatting) with
-   `documents-skills:docx-toolkit` if installed, otherwise the docx audit in
-   `docs/checklists.md`. Get fixes made first.
+   `documents-skills:docx-toolkit` if installed and runnable, otherwise the docx audit in
+   `docs/checklists.md` (it uses `node scripts/docx_inspect.js`; never write your own
+   helper script). Get fixes made first.
 3. **Convert to PDF** only after that: `npm run pdf -- "<path to .docx>"`. One file per
    call, in the foreground; never loop over files in one call or run it in the
    background (Word automation hangs when backgrounded on Windows). The user submits

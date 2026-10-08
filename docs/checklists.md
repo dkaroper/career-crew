@@ -67,6 +67,12 @@ the user. Nothing is ever sent by an agent.
 Fallback for `documents-skills:docx-toolkit`. Use on every generated resume `.docx`
 before it is converted to PDF.
 
+Inspect the file with `node scripts/docx_inspect.js "<path to .docx>"`: it prints each
+paragraph's style, list marker, tab count, and text, plus the fonts, comments, and
+tracked changes, without changing the file. Compare that output with the `.md` for the
+checks below. Never write a new script or helper file into the project to inspect a
+`.docx`.
+
 - **Heading hierarchy.** The candidate name is Heading 1, section titles are Heading 2,
   and job title lines are Heading 3, with no skipped levels and no fake headings made
   of bold body text.
