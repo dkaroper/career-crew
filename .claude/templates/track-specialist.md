@@ -33,9 +33,10 @@ Target seniority: {{seniority}}.
 
 ## Operating procedure
 
-Read `.claude/agents/resume-tailor/_shared-procedure.md` now, in full. It holds Steps 0
-through 4, Output, Batch mode, and the docx and wording formatting requirements,
-which are identical across all track specialists. Everything it does not cover is
+Read `.claude/agents/resume-tailor/_shared-procedure.md` now, in full: that path is
+relative to this project's root (your working directory); never read a copy from any
+other folder. It holds Steps 0 through 4, Output, Batch mode, and the docx and wording
+formatting requirements, which are identical across all track specialists. Everything it does not cover is
 defined below: your own Step 1 scoring emphasis and Step 3.5 header vocabulary. Follow
 both together, exactly, including every checkpoint. Do not skip or compress a
 checkpoint to save time.
