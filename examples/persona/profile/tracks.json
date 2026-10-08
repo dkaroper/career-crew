@@ -1,0 +1,38 @@
+{
+  "tracks": [
+    {
+      "slug": "quality",
+      "label": "Quality Control",
+      "titleKeywords": ["quality technician", "quality inspector", "QC technician", "technicien qualité", "inspecteur qualité"],
+      "seniority": ["junior", "intermediate"],
+      "scoringEmphasis": {
+        "direct": "Hands-on inspection, CMM and gauge work, NCRs, 8D corrective action, and calibration control.",
+        "transferable": "Measurement or documentation rigor from production and machining roles.",
+        "adjacent": "Lean or process work that touches quality outcomes, such as setup reduction or SPC.",
+        "impact": "Escape rates, inspection time, NCR closure rate, and customer returns."
+      },
+      "header": {
+        "label": "QUALITY TECHNICIAN",
+        "guidance": "Lead with the current inspection role and name the main tools (CMM, SPC, 8D) in one line."
+      },
+      "excludeKeywords": ["director", "manager", "food safety"]
+    },
+    {
+      "slug": "continuous-improvement",
+      "label": "Continuous Improvement",
+      "titleKeywords": ["continuous improvement technician", "process improvement", "lean technician", "amélioration continue"],
+      "seniority": ["junior", "intermediate"],
+      "scoringEmphasis": {
+        "direct": "Kaizen events, 5S, setup reduction, value-stream work, and measured process changes.",
+        "transferable": "Root-cause and corrective-action work from quality roles, SPC and data analysis.",
+        "adjacent": "Shop-floor production experience and training others on new methods.",
+        "impact": "Setup time, scrap rate, throughput, and hours saved per month."
+      },
+      "header": {
+        "label": "CONTINUOUS IMPROVEMENT TECHNICIAN",
+        "guidance": "Frame quality work as process improvement, leading with measured before-and-after results."
+      },
+      "excludeKeywords": ["director", "software"]
+    }
+  ]
+}

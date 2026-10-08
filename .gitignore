@@ -9,3 +9,7 @@ applications/
 .env
 .superpowers/
 .worktrees/
+# Fictional example personas ship their user-data folders on purpose.
+!examples/**/profile/
+!examples/**/library/
+!examples/**/applications/

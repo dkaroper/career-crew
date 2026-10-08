@@ -1,0 +1,11 @@
+{
+  "user": { "fullName": "Marie-Ève Côté-Tremblay", "displayName": "Marie-Ève", "filePrefix": "CoteTremblay" },
+  "agents": {
+    "orchestrator": "Scout",
+    "resume-tailor": "Weaver",
+    "outreach": "Herald",
+    "interview-prep": "Sage",
+    "job-scraper": "Fred"
+  },
+  "specialists": { "quality": "Warden", "continuous-improvement": "Kaizen" }
+}

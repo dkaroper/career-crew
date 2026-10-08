@@ -118,3 +118,21 @@ test('profilePaths and DEFAULT_AGENT_NAMES', () => {
   assert.strictEqual(p.DEFAULT_AGENT_NAMES['job-scraper'], 'Fred');
   assert.strictEqual(p.DEFAULT_AGENT_NAMES.orchestrator, 'Scout');
 });
+
+test('example persona profile passes validation', () => {
+  const dir = path.join(__dirname, '..', 'examples', 'persona', 'profile');
+  const t = p.readJson(path.join(dir, 'tracks.json'));
+  const c = p.readJson(path.join(dir, 'crew.json'));
+  assert.ok(t.ok, t.error);
+  assert.ok(c.ok, c.error);
+  assert.deepStrictEqual(p.validateTracks(t.value), []);
+  assert.deepStrictEqual(p.validateCrew(c.value, t.value), []);
+  assert.deepStrictEqual(t.value.tracks.map((x) => x.slug), ['quality', 'continuous-improvement']);
+  assert.strictEqual(c.value.user.filePrefix, p.deriveFilePrefix(c.value.user.fullName));
+  const prefs = fs.readFileSync(path.join(dir, 'preferences.md'), 'utf8');
+  for (const s of ['Location', 'Work Authorization', 'Languages', 'Salary', 'Coverage Floor', 'Writing Style', 'Modules']) {
+    assert.ok(prefs.includes(`## ${s}`), `preferences.md missing ${s}`);
+  }
+  assert.match(prefs, /^Job Scraper: off$/m);
+  assert.match(prefs, /^Outreach Chrome: off$/m);
+});
