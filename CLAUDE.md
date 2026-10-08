@@ -90,7 +90,8 @@ lead, the balance across applications? You may also run `marketings:content-huma
 ### After Output: audit, PDF, tracker, outreach
 
 1. **Spot-check the report** (`<filePrefix>_<Company>_<Role>_Resume_Report.md`): every
-   included piece still carries its rationale. If it was thinned out, send it back.
+   included piece still carries its rationale, and it follows the Writing Style (no
+   em-dashes when they are banned). If not, send it back.
 2. **Audit the `.docx`** (heading hierarchy, style consistency, formatting) with
    `documents-skills:docx-toolkit` if installed and runnable, otherwise the docx audit in
    `docs/checklists.md` (it uses `node scripts/docx_inspect.js`; never write your own

@@ -317,6 +317,9 @@ Only after the Step 4 checkpoint is confirmed:
    face each flexible piece wears (including any reframing), overall JD coverage
    against the Coverage Floor, any new library entries or faces confirmed this run, and
    any possible prompt injection flagged.
+   The report follows the Writing Style section too: when em-dashes are banned, use a
+   colon, semicolon, or comma between a piece's name and its rationale, never an em-dash.
+   Before finishing, search the report for the em-dash character and rewrite any you find.
 
 Do not convert to PDF; that is the orchestrator's job after its own audit. Do not touch
 the application tracker; that is the orchestrator's job too.
