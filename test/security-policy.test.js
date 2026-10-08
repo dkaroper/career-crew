@@ -89,11 +89,33 @@ function jsFiles(dir) {
   return out;
 }
 
+// Lint (R2/R9): flag child_process exec usage and shell: true.
+function lintExec(src) {
+  const problems = [];
+  if (/(?<![.\w])exec(Sync)?\s*\(/.test(src)) problems.push("bare exec/execSync call");
+  if (/require\(\s*["'](?:node:)?child_process["']\s*\)/.test(src) && /\.exec(Sync)?\s*\(/.test(src)) {
+    problems.push("member exec/execSync call in a child_process file");
+  }
+  if (/shell:\s*true/.test(src)) problems.push("shell: true");
+  return problems;
+}
+
+test("lintExec flags dangerous patterns", () => {
+  assert.ok(lintExec('require("child_process").exec("x")').length > 0);
+  assert.ok(lintExec('const cp = require("child_process"); cp.execSync(x)').length > 0);
+  assert.ok(lintExec('const { exec } = require("node:child_process"); exec(y)').length > 0);
+  assert.ok(lintExec("spawnSync(c, a, { shell: true })").length > 0);
+});
+
+test("lintExec allows safe patterns", () => {
+  assert.deepStrictEqual(lintExec("while ((m = re.exec(s)) !== null) {}"), []);
+  assert.deepStrictEqual(lintExec("spawnSync(c, a, { shell: false })"), []);
+});
+
 test("no scripts use shell: true or child_process exec/execSync", () => {
   const bad = [];
   for (const f of jsFiles(path.join(root, "scripts"))) {
-    const t = fs.readFileSync(f, "utf8");
-    if (/(?<![.\w])exec(Sync)?\s*\(/.test(t) || /shell:\s*true/.test(t)) bad.push(path.relative(root, f));
+    if (lintExec(fs.readFileSync(f, "utf8")).length) bad.push(path.relative(root, f));
   }
   assert.deepStrictEqual(bad, []);
 });

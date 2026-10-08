@@ -58,7 +58,7 @@ for (const f of crewJsonFiles) {
 test("no tracked text file contains an em-dash (U+2014)", () => {
   const bad = tracked()
     .filter((f) => /\.(md|js|json|yml)$/.test(f))
-    .filter((f) => fs.readFileSync(path.join(root, f), "utf8").includes("—"));
+    .filter((f) => fs.readFileSync(path.join(root, f), "utf8").includes(String.fromCharCode(0x2014)));
   assert.deepStrictEqual(bad, []);
 });
 
