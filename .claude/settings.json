@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node scripts/*)",
+      "Bash(npm run *)",
+      "Bash(npm test)",
+      "Bash(npm ci)"
+    ],
+    "deny": [
+      "Bash(git push *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(rm -rf *)",
+      "Bash(Invoke-WebRequest *)",
+      "PowerShell(Invoke-WebRequest *)",
+      "PowerShell(git push *)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}
