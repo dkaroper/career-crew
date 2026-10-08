@@ -82,7 +82,8 @@ things:
 Every draft must reference something real from Step 1 or the resume and JD; never
 fabricate a shared connection, a mutual acquaintance, or background that doesn't
 exist. Apply the Writing Style section of `profile/preferences.md` to every draft
-(banned words and punctuation, tone).
+(banned words and punctuation, tone) and to everything else you write in `Outreach.md`,
+including research notes.
 
 **Opener order for the LinkedIn message and cold email.** The connection note's
 300-character limit already forces a tight, hook-first opener; this rule is for the
