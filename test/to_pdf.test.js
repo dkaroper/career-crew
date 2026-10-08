@@ -78,3 +78,25 @@ test("CLI exits 2 and mentions LibreOffice when no engine exists", () => {
   assert.strictEqual(r.status, 2);
   assert.ok((r.stdout + r.stderr).includes("LibreOffice"));
 });
+
+test("word stages paths of 250+ characters through a short temp folder", () => {
+  const { stagePaths } = require("../scripts/to_pdf.js");
+  const longDir = path.join("C:", "d".repeat(240));
+  const inp = path.join(longDir, "Raman_Resume.docx");
+  const out = path.join(longDir, "Raman_Resume.pdf");
+  const tmp = path.join("C:", "Temp", "cc-pdf-1");
+  const s = stagePaths("word", inp, out, tmp);
+  assert.strictEqual(s.staged, true);
+  assert.strictEqual(s.convIn, path.join(tmp, "in.docx"));
+  assert.strictEqual(s.convOut, path.join(tmp, "out.pdf"));
+  assert.ok(s.convIn.length < 250 && s.convOut.length < 250);
+});
+
+test("short paths and LibreOffice are never staged", () => {
+  const { stagePaths } = require("../scripts/to_pdf.js");
+  const a = path.join("C:", "a", "r.docx");
+  const b = path.join("C:", "a", "r.pdf");
+  assert.deepStrictEqual(stagePaths("word", a, b, path.join("C:", "Temp", "x")), { staged: false, convIn: a, convOut: b });
+  const longIn = path.join("d".repeat(300), "r.docx");
+  assert.strictEqual(stagePaths("libreoffice", longIn, longIn.replace(".docx", ".pdf"), "x").staged, false);
+});

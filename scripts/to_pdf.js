@@ -5,6 +5,7 @@
 // env vars only; LibreOffice receives them as discrete argv elements.
 // Always spawnSync with shell: false, one file per invocation, foreground.
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 
@@ -52,6 +53,16 @@ function buildCommand(engine, inPath, outPath, sofficeCmd = "soffice") {
   throw new Error(`Unknown engine: ${engine}`);
 }
 
+// Word cannot open or save a path of 255+ characters ("String is longer than 255
+// characters"). For long paths, convert a copy in a short temp folder instead.
+const WORD_MAX_PATH = 250;
+function stagePaths(engine, inPath, outPath, tmpDir) {
+  if (engine === "word" && (inPath.length >= WORD_MAX_PATH || outPath.length >= WORD_MAX_PATH)) {
+    return { staged: true, convIn: path.join(tmpDir, "in.docx"), convOut: path.join(tmpDir, "out.pdf") };
+  }
+  return { staged: false, convIn: inPath, convOut: outPath };
+}
+
 function probe(cmd, args) {
   const r = spawnSync(cmd, args, { shell: false, stdio: "ignore", timeout: 30000 });
   return !r.error && r.status === 0;
@@ -92,13 +103,25 @@ function main(argv) {
   }
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
 
-  const { cmd, args, env } = buildCommand(engine, inPath, outPath, found.soffice || "soffice");
+  let tmpDir = null;
+  let stage = stagePaths(engine, inPath, outPath, "");
+  if (stage.staged) {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "cc-pdf-"));
+    stage = stagePaths(engine, inPath, outPath, tmpDir);
+    fs.copyFileSync(inPath, stage.convIn);
+  }
+
+  const { cmd, args, env } = buildCommand(engine, stage.convIn, stage.convOut, found.soffice || "soffice");
   const r = spawnSync(cmd, args, {
     shell: false,
     encoding: "utf8",
     timeout: TIMEOUT_MS,
     env: { ...process.env, ...env },
   });
+  if (stage.staged) {
+    if (!r.error && r.status === 0 && fs.existsSync(stage.convOut)) fs.copyFileSync(stage.convOut, outPath);
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
   if (r.error || r.status !== 0) {
     console.error(`PDF conversion with ${engine} failed: ${(r.error && r.error.message) || r.stderr || r.stdout}`);
     return 1;
@@ -117,4 +140,4 @@ function main(argv) {
 
 if (require.main === module) process.exit(main(process.argv.slice(2)));
 
-module.exports = { chooseEngine, buildCommand, detect };
+module.exports = { chooseEngine, buildCommand, detect, stagePaths };
