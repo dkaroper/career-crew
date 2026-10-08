@@ -278,7 +278,7 @@ not JD-specific judgment calls:
   the `.md` to fake alignment (Arial is proportional, so padding collapses into
   run-together text such as `Quality TechnicianMar 2022 – Present`).
 - **Punctuation and wording:** apply the Writing Style section of
-  `profile/preferences.md` in both the `.md` and the `.docx`. If it bans em-dashes,
+  `profile/preferences.md` in the `.md`, the `.docx`, and the report. If it bans em-dashes,
   rewrite any with a semicolon, comma, colon, or a second sentence; date ranges keep
   their usual en-dash (`Mar 2022 – Present`).
 
