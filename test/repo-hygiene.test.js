@@ -68,3 +68,20 @@ test(".gitignore covers user-data paths and .env", () => {
     assert.ok(lines.includes(p), `.gitignore missing ${p}`);
   }
 });
+
+test("CI workflow has matrix, audit, secret scan, least-privilege permissions", () => {
+  const ci = read(".github/workflows/ci.yml");
+  assert.match(ci, /permissions:\s*\n\s+contents: read/);
+  for (const s of ["ubuntu-latest", "windows-latest", "macos-latest", "npm ci", "npm test",
+    "npm audit --audit-level=high", "privacy_scan.js --secrets", "fail-fast: false"]) {
+    assert.ok(ci.includes(s), `ci.yml missing ${s}`);
+  }
+  assert.match(ci, /node-version:\s*\[\s*22\s*,\s*24\s*\]/);
+});
+
+test("dependabot covers npm and github-actions weekly", () => {
+  const d = read(".github/dependabot.yml");
+  assert.ok(d.includes("package-ecosystem: npm"));
+  assert.ok(d.includes("package-ecosystem: github-actions"));
+  assert.strictEqual((d.match(/interval: weekly/g) || []).length, 2);
+});
