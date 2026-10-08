@@ -292,7 +292,9 @@ is installed, use it for the audit; otherwise follow the docx audit checklist in
 Only after the Step 4 checkpoint is confirmed:
 
 1. **Get the application folder.** Run `node scripts/app_path.js "<Company>" "<Role>"`
-   and use exactly the path it prints. Never build the folder path by hand. Create the
+   and use exactly the path it prints.
+   **Sanitize first:** before putting JD-derived company or role text into the `app_path.js` command, replace every character that is not a letter (any script, including accented letters), a digit, or a space with a space. This never changes the folder name, because the script keeps only letters and digits anyway.
+   Never build the folder path by hand. Create the
    folder if it doesn't exist. Every file you write goes in this folder and nowhere
    else. Below, `<Company>_<Role>` means the folder's own name (the last path segment
    the script printed), and `<filePrefix>` is `user.filePrefix` from
