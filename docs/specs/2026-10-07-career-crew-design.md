@@ -1,7 +1,7 @@
 # career-crew: Design Spec
 
 **Date:** 2026-10-07
-**Status:** Draft, awaiting review
+**Status:** Approved; implemented 2026-10
 **Source:** Generalized from a private, single-user Claude Code job-application system.
 
 ## 1. Goal
