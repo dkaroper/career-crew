@@ -1,10 +1,32 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node scripts/*)",
-      "Bash(npm run *)",
+      "Bash(node scripts/app_path.js *)",
+      "Bash(node scripts/generate_docx.js *)",
+      "Bash(node scripts/extract_text.js *)",
+      "Bash(node scripts/docx_inspect.js *)",
+      "Bash(node scripts/to_pdf.js *)",
+      "Bash(node scripts/doctor.js *)",
+      "Bash(node scripts/render_specialists.js *)",
+      "Bash(npm run doctor *)",
+      "Bash(npm run render *)",
+      "Bash(npm run pdf *)",
+      "Bash(npm run test *)",
       "Bash(npm test)",
-      "Bash(npm ci)"
+      "Bash(npm ci)",
+      "PowerShell(node scripts/app_path.js *)",
+      "PowerShell(node scripts/generate_docx.js *)",
+      "PowerShell(node scripts/extract_text.js *)",
+      "PowerShell(node scripts/docx_inspect.js *)",
+      "PowerShell(node scripts/to_pdf.js *)",
+      "PowerShell(node scripts/doctor.js *)",
+      "PowerShell(node scripts/render_specialists.js *)",
+      "PowerShell(npm run doctor *)",
+      "PowerShell(npm run render *)",
+      "PowerShell(npm run pdf *)",
+      "PowerShell(npm run test *)",
+      "PowerShell(npm test)",
+      "PowerShell(npm ci)"
     ],
     "deny": [
       "Bash(git push *)",
@@ -13,6 +35,11 @@
       "Bash(rm -rf *)",
       "Bash(Invoke-WebRequest *)",
       "PowerShell(Invoke-WebRequest *)",
+      "PowerShell(Invoke-RestMethod *)",
+      "PowerShell(irm *)",
+      "PowerShell(iwr *)",
+      "PowerShell(curl *)",
+      "PowerShell(wget *)",
       "PowerShell(git push *)",
       "Read(./.env)",
       "Read(./.env.*)"

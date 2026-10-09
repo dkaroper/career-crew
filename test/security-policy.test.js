@@ -119,3 +119,39 @@ test("no scripts use shell: true or child_process exec/execSync", () => {
   }
   assert.deepStrictEqual(bad, []);
 });
+
+// R17: allow only the project's named scripts, for both Bash and PowerShell.
+const ALLOWED_COMMANDS = [
+  ...["app_path", "generate_docx", "extract_text", "docx_inspect", "to_pdf", "doctor", "render_specialists"].map(
+    (s) => `node scripts/${s}.js *`
+  ),
+  ...["doctor", "render", "pdf", "test"].map((s) => `npm run ${s} *`),
+  "npm test",
+  "npm ci",
+];
+
+test(".claude/settings.json allows exactly the named scripts for Bash and PowerShell", () => {
+  const s = JSON.parse(read(".claude/settings.json"));
+  const expected = [...ALLOWED_COMMANDS.map((c) => `Bash(${c})`), ...ALLOWED_COMMANDS.map((c) => `PowerShell(${c})`)].sort();
+  assert.deepStrictEqual([...s.permissions.allow].sort(), expected);
+  for (const rule of s.permissions.allow) assert.ok(!/scripts\/\*|npm run \*\)/.test(rule), `broad rule: ${rule}`);
+});
+
+test(".claude/settings.json denies PowerShell network and push commands", () => {
+  const deny = JSON.parse(read(".claude/settings.json")).permissions.deny;
+  for (const rule of [
+    "PowerShell(Invoke-WebRequest *)",
+    "PowerShell(Invoke-RestMethod *)",
+    "PowerShell(irm *)",
+    "PowerShell(iwr *)",
+    "PowerShell(curl *)",
+    "PowerShell(wget *)",
+    "PowerShell(git push *)",
+    "Bash(git push *)",
+    "Bash(curl *)",
+    "Bash(wget *)",
+    "Bash(rm -rf *)",
+  ]) {
+    assert.ok(deny.includes(rule), `deny list lacks exact rule ${rule}`);
+  }
+});
