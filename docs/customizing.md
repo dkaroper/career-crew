@@ -13,9 +13,10 @@ By hand: edit the name in `profile/crew.json` (`agents.<role>` for a core agent,
 `specialists.<slug>` for a track specialist). Names use letters, digits, spaces, `_`
 and `-`, at most 40 characters, and must be unique across the whole crew.
 
-- Core agents read their names every run, so the change takes effect immediately.
-- A specialist's name is baked into its generated file, so run `npm run render` and
-  restart Claude Code.
+- The orchestrator, outreach, interview-prep, and job-scraper read their names every
+  run, so the change takes effect immediately.
+- Renaming resume-tailor or a specialist needs `npm run render` and a restart of
+  Claude Code: both names are baked into the generated specialist files.
 
 ## Add or remove a track
 
@@ -44,11 +45,16 @@ only its files or sections; everything else stays. The stages:
 | Stage | Covers | Rewrites |
 |---|---|---|
 | 1 | Agent names, your name | `profile/crew.json` |
-| 2, 3 | Resume intake, role deep-dive | `library/Experience_Library.md` |
+| 2, 3 | Resume intake, role deep-dive | `library/Experience_Library.md`, merged entry by entry (see below) |
 | 4 | Tracks and specialists | `profile/tracks.json`, `crew.json` (then render and restart) |
 | 5 | Location, work authorization, languages, salary floor, coverage floor | `profile/preferences.md` sections, `profile/screening-answers.md` |
 | 6 | Writing style | `preferences.md` Writing Style |
 | 7 | Job Scraper, Outreach Chrome | `preferences.md` Modules |
+
+Redoing stage 2 or 3 never wipes your library. The orchestrator first copies it to
+`library/Experience_Library.md.bak`, then compares the new answers with what is there
+one entry at a time and asks you about each difference. Faces, bullets, and date notes
+you already confirmed stay unless you choose otherwise for that entry.
 
 ## Edit preferences by hand
 
