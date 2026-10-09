@@ -148,3 +148,19 @@ test('missing crew.json reports an error and writes nothing', () => {
   assert.ok(res.errors.length > 0);
   assert.deepStrictEqual(fs.readdirSync(agentsDir(root)), []);
 });
+
+test('a track slug named constructor without its own specialist is rejected, not rendered from the prototype', () => {
+  const root = makeRoot([track('constructor', 'Constructor')], crewFor(['design']));
+  const res = renderSpecialists({ root });
+  assert.ok(res.errors.some((e) => e.includes('constructor')), String(res.errors));
+  assert.deepStrictEqual(fs.readdirSync(agentsDir(root)), []);
+});
+
+test('a track slug named constructor with its own specialist renders that name', () => {
+  const root = makeRoot([track('constructor', 'Constructor')]);
+  const res = renderSpecialists({ root });
+  assert.deepStrictEqual(res.errors, []);
+  const text = fs.readFileSync(path.join(agentsDir(root), 'resume-tailor-constructor.md'), 'utf8');
+  assert.ok(text.includes('Drafter'));
+  assert.ok(!text.includes('native code'));
+});

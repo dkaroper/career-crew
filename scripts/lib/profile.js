@@ -145,7 +145,7 @@ function validateCrew(crew, tracks) {
     for (const [slug, name] of Object.entries(specialists)) note(name, `specialists.${slug}`);
     const list = tracks && Array.isArray(tracks.tracks) ? tracks.tracks : [];
     for (const t of list) {
-      if (t && typeof t.slug === 'string' && !(t.slug in specialists)) {
+      if (t && typeof t.slug === 'string' && !Object.hasOwn(specialists, t.slug)) {
         errors.push(`track "${t.slug}" has no entry in specialists`);
       }
     }

@@ -136,3 +136,12 @@ test('example persona profile passes validation', () => {
   assert.match(prefs, /^Job Scraper: off$/m);
   assert.match(prefs, /^Outreach Chrome: off$/m);
 });
+
+test('validateCrew: a track slug matching an Object.prototype key still needs its own specialist', () => {
+  for (const slug of ['constructor']) {
+    const t = tracks();
+    t.tracks[0].slug = slug;
+    const errs = p.validateCrew(crew(), t);
+    assert.ok(errs.some((e) => e.includes(`track "${slug}" has no entry in specialists`)), `${slug}: ${errs}`);
+  }
+});

@@ -10,7 +10,7 @@ const MARKER = '<!-- career-crew:generated (do not edit; rerun npm run render) -
 const FILE_RE = /^resume-tailor-([a-z][a-z0-9-]*)\.md$/;
 
 function lookup(vars, key) {
-  return Object.prototype.hasOwnProperty.call(vars, key) ? vars[key] : undefined;
+  return Object.hasOwn(vars, key) ? vars[key] : undefined;
 }
 
 function escapeQuoted(value) {
@@ -72,7 +72,7 @@ function renderSpecialists(options) {
   const rendered = [];
   for (const t of tr.value.tracks) {
     const vars = {
-      name: crew.specialists[t.slug],
+      name: Object.hasOwn(crew.specialists, t.slug) ? crew.specialists[t.slug] : undefined,
       slug: t.slug,
       label: t.label,
       titleKeywords: t.titleKeywords.join(', '),
