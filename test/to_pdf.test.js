@@ -26,13 +26,17 @@ test("chooseEngine returns null when nothing is available", () => {
 });
 
 test("libreoffice command keeps spaced paths as single elements", () => {
-  const inp = "C:\\My Docs\\a b.docx";
-  const { cmd, args } = buildCommand("libreoffice", inp, "C:\\My Docs\\a b.pdf");
+  const os = require("node:os");
+  const dir = path.join(os.tmpdir(), "My Docs");
+  const inp = path.join(dir, "a b.docx");
+  const out = path.join(dir, "a b.pdf");
+  const { cmd, args } = buildCommand("libreoffice", inp, out);
   assert.strictEqual(cmd, "soffice");
-  for (const a of ["--headless", "--convert-to", "pdf", "--outdir", "C:\\My Docs"]) {
+  for (const a of ["--headless", "--convert-to", "pdf", "--outdir"]) {
     assert.ok(args.includes(a), `missing ${a}`);
   }
-  assert.ok(args.includes(inp));
+  assert.strictEqual(args[args.indexOf("--outdir") + 1], path.dirname(out));
+  assert.strictEqual(args.filter((a) => a === inp).length, 1, "input path must appear once, unsplit");
 });
 
 test("word command passes hostile paths only through env", () => {
