@@ -68,19 +68,48 @@ function probe(cmd, args) {
   return !r.error && r.status === 0;
 }
 
+// Windows installers put soffice.exe under Program Files without adding it to PATH.
+function windowsSofficeCandidates(env) {
+  const roots = [env.ProgramFiles, env["ProgramFiles(x86)"]].filter((r) => typeof r === "string" && r.length > 0);
+  return roots.map((r) => path.win32.join(r, "LibreOffice", "program", "soffice.exe"));
+}
+
+// Returns the soffice command to run, or null. Dependencies are injectable for tests.
+function findSoffice({ platform, env, existsSync, probe: probeFn }) {
+  if (probeFn("soffice", ["--version"])) return "soffice";
+  if (platform === "darwin" && existsSync(MAC_SOFFICE) && probeFn(MAC_SOFFICE, ["--version"])) return MAC_SOFFICE;
+  if (platform === "win32") {
+    for (const candidate of windowsSofficeCandidates(env)) {
+      if (existsSync(candidate)) return candidate;
+    }
+  }
+  return null;
+}
+
 // Not called at require time.
 function detect() {
   const hasWord = process.platform === "win32" && probe("reg", ["query", "HKCR\\Word.Application"]);
-  let soffice = null;
-  if (probe("soffice", ["--version"])) soffice = "soffice";
-  else if (process.platform === "darwin" && fs.existsSync(MAC_SOFFICE) && probe(MAC_SOFFICE, ["--version"])) soffice = MAC_SOFFICE;
+  const soffice = findSoffice({ platform: process.platform, env: process.env, existsSync: fs.existsSync, probe });
   return { hasWord, hasSoffice: soffice !== null, soffice };
 }
 
-function main(argv) {
+// LibreOffice writes <outdir>/<input base>.pdf. Any copy left from an earlier run
+// must go before converting, so the existence check afterwards proves a fresh file.
+function libreOfficeProduct(inPath, outDir) {
+  return path.join(outDir, path.basename(inPath).replace(/\.[^.]*$/, "") + ".pdf");
+}
+
+function removeStale(paths) {
+  for (const p of new Set(paths)) fs.rmSync(p, { force: true });
+}
+
+function main(argv, deps = {}) {
+  const run = deps.spawnSync || spawnSync;
+  const log = deps.log || ((m) => console.log(m));
+  const error = deps.error || ((m) => console.error(m));
   const [inArg, outArg] = argv;
   if (!inArg) {
-    console.error("Usage: node scripts/to_pdf.js <in.docx> [out.pdf]");
+    error("Usage: node scripts/to_pdf.js <in.docx> [out.pdf]");
     return 1;
   }
   const inPath = path.resolve(inArg);
@@ -88,56 +117,60 @@ function main(argv) {
 
   let found;
   if (process.env.CAREER_CREW_FORCE_NO_ENGINE === "1") found = { hasWord: false, hasSoffice: false, soffice: null };
-  else found = detect();
+  else found = (deps.detect || detect)();
   const engine = chooseEngine({ platform: process.platform, hasWord: found.hasWord, hasSoffice: found.hasSoffice });
   if (!engine) {
-    console.error(
+    error(
       "No PDF engine found. Install LibreOffice (https://www.libreoffice.org/) so `soffice` is available, " +
         "or use Microsoft Word on Windows. You can also open the .docx and use Save As PDF."
     );
     return 2;
   }
   if (!fs.existsSync(inPath)) {
-    console.error(`Input not found: ${inPath}`);
+    error(`Input not found: ${inPath}`);
     return 1;
   }
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
 
   let tmpDir = null;
   let stage = stagePaths(engine, inPath, outPath, "");
-  if (stage.staged) {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "cc-pdf-"));
-    stage = stagePaths(engine, inPath, outPath, tmpDir);
-    fs.copyFileSync(inPath, stage.convIn);
-  }
+  try {
+    if (stage.staged) {
+      tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "cc-pdf-"));
+      stage = stagePaths(engine, inPath, outPath, tmpDir);
+      fs.copyFileSync(inPath, stage.convIn);
+    }
+    const stale = [outPath, stage.convOut];
+    if (engine === "libreoffice") stale.push(libreOfficeProduct(stage.convIn, path.dirname(stage.convOut)));
+    removeStale(stale.filter((p) => p !== inPath && p !== stage.convIn));
 
-  const { cmd, args, env } = buildCommand(engine, stage.convIn, stage.convOut, found.soffice || "soffice");
-  const r = spawnSync(cmd, args, {
-    shell: false,
-    encoding: "utf8",
-    timeout: TIMEOUT_MS,
-    env: { ...process.env, ...env },
-  });
-  if (stage.staged) {
-    if (!r.error && r.status === 0 && fs.existsSync(stage.convOut)) fs.copyFileSync(stage.convOut, outPath);
-    fs.rmSync(tmpDir, { recursive: true, force: true });
-  }
-  if (r.error || r.status !== 0) {
-    console.error(`PDF conversion with ${engine} failed: ${(r.error && r.error.message) || r.stderr || r.stdout}`);
-    return 1;
-  }
-  if (engine === "libreoffice") {
-    const produced = path.join(path.dirname(outPath), path.basename(inPath).replace(/\.[^.]*$/, "") + ".pdf");
-    if (produced !== outPath && fs.existsSync(produced)) fs.renameSync(produced, outPath);
+    const { cmd, args, env } = buildCommand(engine, stage.convIn, stage.convOut, found.soffice || "soffice");
+    const r = run(cmd, args, {
+      shell: false,
+      encoding: "utf8",
+      timeout: TIMEOUT_MS,
+      env: { ...process.env, ...env },
+    });
+    if (r.error || r.status !== 0) {
+      error(`PDF conversion with ${engine} failed: ${(r.error && r.error.message) || r.stderr || r.stdout}`);
+      return 1;
+    }
+    if (engine === "libreoffice") {
+      const produced = libreOfficeProduct(stage.convIn, path.dirname(stage.convOut));
+      if (produced !== stage.convOut && fs.existsSync(produced)) fs.renameSync(produced, stage.convOut);
+    }
+    if (stage.staged && fs.existsSync(stage.convOut)) fs.copyFileSync(stage.convOut, outPath);
+  } finally {
+    if (tmpDir) fs.rmSync(tmpDir, { recursive: true, force: true });
   }
   if (!fs.existsSync(outPath)) {
-    console.error(`Conversion reported success but ${outPath} was not created.`);
+    error(`Conversion reported success but ${outPath} was not created.`);
     return 1;
   }
-  console.log(outPath);
+  log(outPath);
   return 0;
 }
 
 if (require.main === module) process.exit(main(process.argv.slice(2)));
 
-module.exports = { chooseEngine, buildCommand, detect, stagePaths };
+module.exports = { chooseEngine, buildCommand, detect, findSoffice, stagePaths, main };

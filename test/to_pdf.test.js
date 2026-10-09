@@ -100,3 +100,112 @@ test("short paths and LibreOffice are never staged", () => {
   const longIn = path.join("d".repeat(300), "r.docx");
   assert.strictEqual(stagePaths("libreoffice", longIn, longIn.replace(".docx", ".pdf"), "x").staged, false);
 });
+
+test("findSoffice prefers soffice on PATH", () => {
+  const { findSoffice } = require("../scripts/to_pdf.js");
+  const r = findSoffice({ platform: "win32", env: {}, existsSync: () => false, probe: (c) => c === "soffice" });
+  assert.strictEqual(r, "soffice");
+});
+
+test("findSoffice finds LibreOffice under Program Files on Windows when not on PATH", () => {
+  const { findSoffice } = require("../scripts/to_pdf.js");
+  const pf = "C:\Program Files";
+  const expected = path.win32.join(pf, "LibreOffice", "program", "soffice.exe");
+  const seen = [];
+  const r = findSoffice({
+    platform: "win32",
+    env: { ProgramFiles: pf, "ProgramFiles(x86)": "C:\Program Files (x86)" },
+    existsSync: (p) => {
+      seen.push(p);
+      return p === expected;
+    },
+    probe: () => false,
+  });
+  assert.strictEqual(r, expected);
+});
+
+test("findSoffice falls back to Program Files (x86) on Windows", () => {
+  const { findSoffice } = require("../scripts/to_pdf.js");
+  const x86 = "C:\Program Files (x86)";
+  const expected = path.win32.join(x86, "LibreOffice", "program", "soffice.exe");
+  const r = findSoffice({
+    platform: "win32",
+    env: { ProgramFiles: "C:\Program Files", "ProgramFiles(x86)": x86 },
+    existsSync: (p) => p === expected,
+    probe: () => false,
+  });
+  assert.strictEqual(r, expected);
+});
+
+test("findSoffice returns null on Windows with no install and tolerates missing env vars", () => {
+  const { findSoffice } = require("../scripts/to_pdf.js");
+  assert.strictEqual(findSoffice({ platform: "win32", env: {}, existsSync: () => true, probe: () => false }), null);
+  assert.strictEqual(
+    findSoffice({ platform: "win32", env: { ProgramFiles: "C:\PF" }, existsSync: () => false, probe: () => false }),
+    null
+  );
+});
+
+test("findSoffice ignores Program Files paths off Windows", () => {
+  const { findSoffice } = require("../scripts/to_pdf.js");
+  const r = findSoffice({ platform: "linux", env: { ProgramFiles: "C:\PF" }, existsSync: () => true, probe: () => false });
+  assert.strictEqual(r, null);
+});
+
+test("a stale PDF is removed before converting, so a no-op engine is not reported as success", () => {
+  const os = require("node:os");
+  const { main } = require("../scripts/to_pdf.js");
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cc-pdf-test-"));
+  try {
+    const inp = path.join(dir, "r.docx");
+    const out = path.join(dir, "Final.pdf");
+    const intermediate = path.join(dir, "r.pdf");
+    fs.writeFileSync(inp, "docx");
+    fs.writeFileSync(out, "stale");
+    fs.writeFileSync(intermediate, "stale intermediate");
+    const calls = [];
+    const code = main([inp, out], {
+      detect: () => ({ hasWord: false, hasSoffice: true, soffice: "fake-soffice" }),
+      spawnSync: (cmd, args, opts) => {
+        calls.push({ cmd, args, opts });
+        return { status: 0, stdout: "", stderr: "" };
+      },
+      log: () => {},
+      error: () => {},
+    });
+    assert.strictEqual(calls.length, 1);
+    assert.strictEqual(calls[0].opts.shell, false);
+    assert.strictEqual(code, 1, "no fresh PDF was produced, must not report success");
+    assert.ok(!fs.existsSync(out), "stale output must be deleted");
+    assert.ok(!fs.existsSync(intermediate), "stale LibreOffice intermediate must be deleted");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a fresh LibreOffice conversion is renamed to the requested output and reported", () => {
+  const os = require("node:os");
+  const { main } = require("../scripts/to_pdf.js");
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cc-pdf-test-"));
+  try {
+    const inp = path.join(dir, "r.docx");
+    const out = path.join(dir, "Final.pdf");
+    fs.writeFileSync(inp, "docx");
+    fs.writeFileSync(out, "stale");
+    const logged = [];
+    const code = main([inp, out], {
+      detect: () => ({ hasWord: false, hasSoffice: true, soffice: "fake-soffice" }),
+      spawnSync: () => {
+        fs.writeFileSync(path.join(dir, "r.pdf"), "fresh");
+        return { status: 0, stdout: "", stderr: "" };
+      },
+      log: (m) => logged.push(m),
+      error: () => {},
+    });
+    assert.strictEqual(code, 0);
+    assert.strictEqual(fs.readFileSync(out, "utf8"), "fresh");
+    assert.deepStrictEqual(logged, [out]);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
