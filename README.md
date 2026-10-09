@@ -23,7 +23,7 @@ On top of that, each job-search track you set up gets its own resume specialist.
 You need Claude Code, Node.js 22 or newer, and git. [PREREQUISITES.md](PREREQUISITES.md) has install commands for Windows, macOS, and Linux.
 
 ```bash
-git clone https://github.com/<your-account>/career-crew.git
+git clone https://github.com/dkaroper/career-crew.git
 cd career-crew
 npm install
 npm run doctor
@@ -57,7 +57,7 @@ One thing to know: when the crew reads your resume or a job posting, that text i
 
 - **Job scraper.** Pulls fresh Canadian postings via Apify and JobDataLake. Needs your own accounts and tokens. Setup: [docs/job-scraper-setup.md](docs/job-scraper-setup.md).
 - **Outreach browser checks.** Lets Herald look at a LinkedIn profile in your own Chrome to confirm a contact's current title. It only views; it never clicks, types, or messages. Needs the Claude in Chrome extension.
-- **Recommended plugin skills.** `marketings:content-humanizer`, `marketings:cold-email`, and `documents-skills:docx-toolkit` improve wording and checks. They are optional; without them the crew follows the built-in lists in [docs/checklists.md](docs/checklists.md).
+- **Plugin skills, if you already have them.** If your Claude Code already has `marketings:content-humanizer`, `marketings:cold-email`, or `documents-skills:docx-toolkit` installed from a plugin marketplace you use, the crew uses them for wording and document checks. Nothing depends on them: without them the crew follows the built-in lists in [docs/checklists.md](docs/checklists.md), and you don't need to install anything extra.
 
 ## FAQ
 
@@ -72,6 +72,12 @@ Node.js 22 or newer. Older versions are end-of-life and the libraries used here 
 
 **Can I change a name or add a track later?**
 Yes. See [docs/customizing.md](docs/customizing.md), then run `npm run render` and restart.
+
+**PDF conversion seems stuck. What do I do?**
+On Windows, Word sometimes waits in the background with no window. Close Word, or end `WINWORD.EXE` in Task Manager (Details tab), then run `npm run pdf -- path/to/resume.docx` again. The conversion also gives up on its own after two minutes.
+
+**My company or role name isn't in the Latin alphabet. Is that a problem?**
+Folder and file names keep only Latin letters (accents are dropped, so `Société` becomes `Societe`) and digits. A name written entirely in another script, such as Japanese or Cyrillic, becomes `Unknown` in the folder name, and two such postings would share a folder. When you paste a posting like that, tell the orchestrator a Latin-letter spelling of the company and role to use for the folder; the resume itself still uses the real names.
 
 **Will it apply to jobs for me?**
 No. It prepares the materials. Submitting is yours; if you ask, Scout can walk you through a form step by step but never presses Submit without your go-ahead.
