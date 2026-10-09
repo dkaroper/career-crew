@@ -112,8 +112,9 @@ The decisions that shaped it, in rough order:
   (STAR, or PSTARP for hiring-manager and final rounds), plus a Green/Yellow/Red JD-fit
   tag per story.
 - **The job scraper and autonomous mode.** A scraper files fresh postings from several
-  Canadian sources into dated `inputs/` folders. A scheduled run can continue into
-  tailoring and outreach, resolving most checkpoints itself and logging every decision
+  Canadian sources into dated `inputs/` folders. A scheduled run (experimental: the
+  user's OS scheduler starts `claude -p` with a prompt beginning `AUTONOMOUS RUN`, the
+  only signal that turns the mode on) can continue into tailoring and outreach, resolving most checkpoints itself and logging every decision
   for review; new facts about the user's history are always held for the user. Its
   dedup gained a small file-based knowledge graph (company aliases, track-tagged
   titles, similarity edges) so reposts under a different name are caught, with
