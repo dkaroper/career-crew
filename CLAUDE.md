@@ -104,7 +104,8 @@ lead, the balance across applications? You may also run `marketings:content-huma
 3. **Convert to PDF** only after that: `npm run pdf -- "<path to .docx>"`. One file per
    call, in the foreground; never loop over files in one call or run it in the
    background (Word automation hangs when backgrounded on Windows). The user submits
-   the PDF; the `.docx` stays the working copy.
+   the PDF; the `.docx` stays the working copy. On Windows, if any `npm` command fails
+   with "running scripts is disabled", rerun it as `npm.cmd` (same arguments).
 4. **Update the tracker** (below), then **dispatch `outreach`** without asking.
 
 ### If a `resume-tailor` run was interrupted

@@ -29,6 +29,8 @@ npm install
 npm run doctor
 ```
 
+**Windows PowerShell users:** if `npm install` fails with "running scripts is disabled on this system", that is a default Windows setting, not a problem with career-crew. Use `npm.cmd install` and `npm.cmd run doctor` instead, or run the commands in Command Prompt or Git Bash. [PREREQUISITES.md](PREREQUISITES.md#windows-running-scripts-is-disabled-on-this-system) has the details and a permanent fix.
+
 `npm run doctor` checks your setup and tells you, in plain words, how to fix anything missing. Then open the folder in Claude Code and say hi. The first time, Scout notices there is no profile yet and starts onboarding.
 
 ## What onboarding covers

@@ -30,6 +30,25 @@ node --version
 If you prefer an apt package, NodeSource (https://github.com/nodesource/distributions)
 is the alternative; follow its instructions for Node 22.
 
+### Windows: "running scripts is disabled on this system"
+
+In Windows PowerShell, `npm install` can fail with `npm.ps1 cannot be loaded because
+running scripts is disabled on this system`. Windows blocks PowerShell script files by
+default, and that includes the `npm.ps1` launcher Node installs. Nothing has been
+installed yet when this happens, so it is safe to retry. Pick one:
+
+- **No settings change:** call npm's `.cmd` launcher instead, `npm.cmd install` and
+  `npm.cmd run doctor` (and `npm.cmd run <anything>` later). Running the same commands
+  in Command Prompt or Git Bash also works.
+- **Permanent, for your account only:** run
+  `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once in PowerShell. This lets
+  scripts on your own computer run while downloaded ones still need a signature. It
+  changes a security setting on your machine, so decide for yourself; the first option
+  works without it.
+
+If Claude Code hits the same error while running a project command, it knows to retry
+with `npm.cmd` (CLAUDE.md tells it to).
+
 ### Install git
 
 | System | Command |
