@@ -14,7 +14,7 @@
     "pdf": "node scripts/to_pdf.js"
   },
   "dependencies": {
-    "docx": "^9.9.0",
+    "docx": "^9.15.0",
     "jszip": "^3.10.2"
   }
 }
